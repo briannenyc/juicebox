@@ -23,16 +23,6 @@ async function createUser({
     }
 }
 
-async function getAllUsers() {
-    const { rows } = await client.query(`
-        SELECT id, username, name, location, active
-        FROM users;
-    `);
-
-    return rows;
-}
-
-
 async function updateUser(id, fields = {}){
 
     const setString = Object.keys(fields).map(
@@ -57,24 +47,83 @@ async function updateUser(id, fields = {}){
     }
 }
 
+async function getAllUsers() {
+    const { rows } = await client.query(`
+        SELECT id, username, name, location, active
+        FROM users;
+    `);
+
+    return rows;
+}
+
+
+
+
+
+async function getUserById(userId) {
+    try {
+      const { rows: [ user ] } = await client.query(`
+        SELECT id, username, name, location, active
+        FROM users
+        WHERE id=${ userId }
+      `);
+  
+      if (!user) {
+        return null
+      }
+  
+      user.posts = await getPostsByUser(userId);
+  
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+// POST METHODS 
+
+
 async function createPost({
     authorId,
     title,
     content
 }) {
     try {
+        const { rows: [ post ] } = await client.query(`
+        INSERT INTO posts ("authorId", title, content)
+        VALUES ($1, $2, $3)
+    
+        RETURNING *;
+        `, [authorId, title, content]);
 
+        return post;
     }catch (error){
         throw error;
     }
 }
 
-async function updatePost(id, {
-    title,
-    content,
-    active
-}) {
-    try {
+async function updatePost(id, fields = {}) {
+   
+        const setString = Object.keys(fields).map(
+            (key, index) => `"${ key }"=$${ index + 1}`
+        ).join(', ');
+    
+        if (setString.length === 0) {
+            return;
+        }
+    
+console.log(id)
+
+        try {
+            const { rows: [ post ]} = await client.query(`
+            UPDATE posts
+            SET ${ setString }
+            WHERE id=${ id }
+            RETURNING *;
+            `, Object.values(fields));
+    
+            return post;
 
     } catch (error){
         throw error;
@@ -84,13 +133,19 @@ async function updatePost(id, {
 
 async function getAllPosts(){
     try {
+        const { rows } = await client.query(`
+        SELECT "authorId", title, content, active, id
+        FROM posts;
+    `);
+
+    return rows;
 
     } catch (error){
         throw error;
     }
 }
 
-// BEGIN HERE WITH ADJUSTING THIS FUNCTION FOR GET USER BY ID.
+
 async function getPostsByUser(userId) {
     try {
       const { rows } = client.query(`
@@ -104,9 +159,15 @@ async function getPostsByUser(userId) {
     }
   }
 
+
 module.exports = {
     client,
     getAllUsers,
     createUser,
     updateUser,
+    getUserById,
+    createPost,
+    updatePost,
+    getAllPosts,
+    getPostsByUser
 }
