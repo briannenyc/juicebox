@@ -6,12 +6,8 @@ const { client,
         createPost,
         updatePost,
         getAllPosts,
-        getPostsByUser,
-        createTags,
-        createPostTag,
-        addTagsToPost,
-        getPostById,
-        getPostsByTagName
+        getPostsByTagName,
+        getAllTags
      } = require('./index');
 
 
@@ -91,7 +87,7 @@ async function createInitialUsers() {
 
         
 
-        console.log(albert);
+        
         console.log("finished creating users!");
 
     } catch (error){
@@ -148,8 +144,9 @@ async function createInitialPosts() {
         content: "I went swimming and my eyelashes fell off. I cried.",
         tags: ["#happy", "#youcandoanything", "#canmandoeverything"]
       });
-      
+      console.log("Finished creating posts!");
     } catch (error) {
+      console.log("Error creating posts!");
       throw error;
     }
   }
@@ -234,7 +231,10 @@ async function testDB() {
     const albert = await getUserById(1);
     console.log("Result:", albert);
 
-     await getPostsByUser(users[0].id)
+    console.log("Calling getAllTags");
+    const allTags = await getAllTags();
+    console.log("Result:", allTags);
+
 
      console.log("Calling getPostsByTagName with #happy");
      const postsWithHappy = await getPostsByTagName("#happy");
