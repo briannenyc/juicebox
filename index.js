@@ -1,3 +1,7 @@
+
+
+
+
 const PORT = 3000;
 const express = require('express');
 const server = express();
@@ -7,6 +11,8 @@ client.connect();
 const apiRouter = require('./api');
 server.use('/api', apiRouter);
 
+server.use(express.urlencoded({ extended: false }))
+server.use(express.json());
 const morgan = require('morgan');
 
 
