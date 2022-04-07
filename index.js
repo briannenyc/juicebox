@@ -8,12 +8,23 @@ const server = express();
 const { client } = require('./db');
 client.connect();
 
+const bodyParser = require('body-parser')
 const apiRouter = require('./api');
+const morgan = require('morgan');
+
+// server.use(express.urlencoded({ extended: false }))
+// server.use(express.json());
+
+server.use(bodyParser.json());
 server.use('/api', apiRouter);
 
-server.use(express.urlencoded({ extended: false }))
-server.use(express.json());
-const morgan = require('morgan');
+
+
+
+
+
+
+
 
 
 server.listen(PORT, () => {
