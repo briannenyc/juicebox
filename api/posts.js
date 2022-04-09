@@ -16,7 +16,7 @@ postsRouter.use((req, res, next) =>{
 
 //GET
 
-postsRouter.get('/', async (req, res) => {
+postsRouter.get('/', async (req, res, next) => {
   try {
     const allPosts = await getAllPosts();
     const posts = allPosts.filter(post => {
