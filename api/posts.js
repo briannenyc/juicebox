@@ -17,13 +17,35 @@ postsRouter.use((req, res, next) =>{
 //GET
 
 postsRouter.get('/', async (req, res) => {
-
-    const posts = await getAllPosts();
+  try {
+    const allPosts = await getAllPosts();
+    const posts = allPosts.filter(post => {
+      // return post.active || (req.user && post.author.id === req.user.id);
+      // the post is not active, but it belogs to the current user
+      if (post.active) {
+        return true;
+      }
+    
+      // keep a post if it is either active, or if it belongs to the current user
+      if (req.user && post.author.id === req.user.id) {
+        return true;
+      }
+    
+      // none of the above are true
+      return false;
+      
+    });
 
     res.send({
-        posts
+      posts
     });
+
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
 });
+
+
 
 //POST
 

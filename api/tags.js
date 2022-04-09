@@ -14,12 +14,22 @@ tagsRouter.get('/:tagName/posts', async (req, res) => {
     const { tagName } = req.params;
 
     try {
-         // use our method to get posts by tag name from the db
-        const getTags = await getPostsByTagName(tagName);
+        const getPosts = await getPostsByTagName(tagName);
+
+        // You should now update this method to filter out any posts 
+        // which are both inactive and not owned by the current user.
+
+
+        const posts = getPosts.filter(post => {
+            return post.active || (req.user && post.author.id === req.user.id);
+          });
+
+       
+        
        
         // send out an object to the client { posts: // the posts }
         
-        res.send(getTags)
+        res.send(posts)
 
       } catch(error) {
       console.log("getting tags not working");
