@@ -3,7 +3,7 @@ const postsRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { requireUser } = require('./utils');
 
-const { getAllPosts, createPost, getAllTags } = require('../db');
+const { getAllPosts, createPost, getAllTags, updatePost, getPosByID } = require('../db');
 const { user } = require('pg/lib/defaults');
 
 postsRouter.use((req, res, next) =>{
